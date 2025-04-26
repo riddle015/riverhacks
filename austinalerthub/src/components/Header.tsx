@@ -9,7 +9,7 @@ const Header = () => {
     <header className="sticky top-0 z-30 w-full border-b bg-background">
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-2">
-          <Link to="/" className="flex items-center gap-2 hover:opacity-60 transition-opacity">
+          <Link to="/" className="flex items-center gap-2 hover:opacity-65 transition-opacity">
             <span className="font-bold text-xl text-safety-blue">Safety</span>
             <span className="font-bold text-xl text-safety-yellow">Spotlight</span>
           </Link>
