@@ -42,7 +42,7 @@ async function fetchWithAuth(
 }
 
 export function signup(data: SignupPayload) {
-  return fetchWithAuth('/api/v1/auth/signup', null, {
+  return fetchWithAuth(`/api/v1/auth/signup`, null, {
     method: 'POST',
     body: JSON.stringify(data)
   })

@@ -17,6 +17,8 @@ import {
   FormLabel,
   FormMessage
 } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 
 // Custom Components
@@ -34,12 +36,16 @@ import { createReport } from '@/api';
 
 // Add this near the top of the file
 const categories: Category[] = [
-  { id: 'roads', name: 'Roads & Infrastructure', icon: 'construction' },
-  { id: 'lighting', name: 'Street Lighting', icon: 'lightbulb' },
-  { id: 'trash', name: 'Trash & Sanitation', icon: 'delete' },
-  { id: 'safety', name: 'Public Safety', icon: 'security' },
-  { id: 'other', name: 'Other', icon: 'more_horiz' }
+  { id: 'infrastructure', name: 'Infrastructure', icon: 'construction', color: '#FFA000' },
+  { id: 'traffic', name: 'Traffic', icon: 'commute', color: '#F44336' },
+  { id: 'crime', name: 'Crime', icon: 'local_police', color: '#3F51B5' },
+  { id: 'environment', name: 'Environment', icon: 'eco', color: '#4CAF50' },
+  { id: 'public_services', name: 'Public Services', icon: 'miscellaneous_services', color: '#9C27B0' },
+  { id: 'noise', name: 'Noise', icon: 'volume_up', color: '#FF5722' },
+  { id: 'animals', name: 'Animals', icon: 'pets', color: '#795548' },
+  { id: 'other', name: 'Other', icon: 'help_outline', color: '#9E9E9E' },
 ];
+
 
 // 1. Form schema
 const formSchema = z.object({
@@ -132,8 +138,7 @@ const ReportIssue = ({ requireAuth }: { requireAuth?: boolean }) => {
                     <FormItem>
                       <FormLabel>Issue Title</FormLabel>
                       <FormControl>
-                        <input
-                          className="input"
+                        <Input
                           placeholder="e.g. Broken streetlight on Main St"
                           {...field}
                         />
@@ -181,8 +186,7 @@ const ReportIssue = ({ requireAuth }: { requireAuth?: boolean }) => {
                     <FormItem>
                       <FormLabel>Description</FormLabel>
                       <FormControl>
-                        <textarea
-                          className="textarea"
+                        <Textarea
                           placeholder="Please describe the issue in detail"
                           {...field}
                         />
