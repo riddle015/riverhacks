@@ -23,6 +23,26 @@ export interface ReportPayload {
   mediaFiles?: any[]
 }
 
+export interface HeatMapFilters {
+  categoryId?: string;
+  startDate?: string;
+  endDate?: string;
+  status?: string;
+  councilDistrict?: number;
+}
+
+export interface NeighborhoodStatistic {
+  neighborhood_id: number;
+  neighborhood_name: string;
+  report_count: number;
+  avg_resolution_hours: number | null;
+}
+
+export interface TimeTrend {
+  month: string;
+  report_count: number;
+}
+
 // helper to wrap fetch + JWT
 async function fetchWithAuth(
   url: string,
@@ -67,4 +87,36 @@ export function createReport(data: ReportPayload, token: string) {
       longitude: data.location.longitude
     })
   })
+}
+
+// Heat map API functions
+export function getHeatmapData(filters: HeatMapFilters = {}, token: string | null) {
+  const { categoryId, startDate, endDate, status, councilDistrict } = filters;
+  
+  // Build query parameters
+  const params = new URLSearchParams();
+  if (categoryId) params.append('category_id', categoryId);
+  if (startDate) params.append('start_date', startDate);
+  if (endDate) params.append('end_date', endDate);
+  if (status) params.append('status', status);
+  if (councilDistrict) params.append('council_district', councilDistrict?.toString() || '');
+  
+  return fetchWithAuth(`/api/v1/heatmap?${params}`, token);
+}
+
+export function getHeatmapStatistics(filters: HeatMapFilters = {}, token: string | null) {
+  const { categoryId, startDate, endDate, status } = filters;
+  
+  // Build query parameters
+  const params = new URLSearchParams();
+  if (categoryId) params.append('category_id', categoryId);
+  if (startDate) params.append('start_date', startDate);
+  if (endDate) params.append('end_date', endDate);
+  if (status) params.append('status', status);
+  
+  return fetchWithAuth(`/api/v1/heatmap/statistics?${params}`, token);
+}
+
+export function getInfrastructureData(token: string | null) {
+  return fetchWithAuth('/api/v1/heatmap/infrastructure', token);
 }

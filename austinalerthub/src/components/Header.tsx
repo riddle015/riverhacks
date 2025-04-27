@@ -56,6 +56,14 @@ const Header = () => {
           <Button variant="ghost" size="icon">
             <Bell className="h-5 w-5" />
           </Button>
+          <Button 
+            variant="ghost" 
+            className="flex flex-col items-center text-xs"
+            onClick={() => navigate('/heat-map')}
+          >
+            <span className="material-icons text-lg mb-1">map</span>
+            Heat Map
+          </Button>
           
           {/* Auth Buttons */}
           {token ? (
