@@ -11,9 +11,12 @@ class DuplicateDetectionService:
         print(f"\n[Duplicate Detection] Checking for similar reports to: '{incident_description}'...")
 
         results = self.service.search(
-            query=incident_description,
-            location=location,
-            num_results=10
+            params={
+                "engine": "google",
+                "q": incident_description,
+                "location": location,
+                "num": 10
+            }
         )
 
         if not results:

@@ -8,7 +8,14 @@ class ContextualVerificationService:
         """Fetch relevant news, web results, and related concerns for a given incident type and location."""
         query = f"{incident_type} {location} safety issue"
 
-        results = self.service.search(query=query, location=location, num_results=10)
+        results = self.service.search(
+            params={
+                "engine": "google",
+                "q": query,
+                "location": location,
+                "num": 10
+            }
+        )
 
         if not results:
             return None

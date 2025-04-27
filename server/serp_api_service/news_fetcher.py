@@ -10,10 +10,12 @@ class NewsFetcher:
         """
         print(f"\n[NewsFetcher] Searching general news for '{query}' in {location}...")
         results = self.service.search(
-            query=query,
-            location=location,
-            num_results=10,  # General news still fetches 5
-            engine="google_news"  # 👈 Force using Google News API here
+            params={
+                "engine": "google_news",  # 👈 Force Google News engine
+                "q": query,
+                "location": location,
+                "num": 10
+            }
         )
 
         if not results or 'news_results' not in results:
@@ -41,10 +43,12 @@ class NewsFetcher:
         query = f"{neighborhood_name} Austin news"
 
         results = self.service.search(
-            query=query,
-            location="Austin, Texas",
-            num_results=15,  # ⬅️ Pull broader
-            engine="google_news"  # 👈 Force using Google News API here too
+            params={
+                "engine": "google_news",  # 👈 Force Google News engine
+                "q": query,
+                "location": "Austin, Texas",
+                "num": 15  # ⬅️ Pull broader for neighborhoods
+            }
         )
 
         if not results or 'news_results' not in results:

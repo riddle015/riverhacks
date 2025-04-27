@@ -28,9 +28,12 @@ class CommunityAlertSystem:
         print("\n[Community Alert] Checking for major incidents...")
 
         results = self.service.search(
-            query="Austin crash OR Austin flood OR Austin fire OR Austin shooting OR Austin accident OR Austin emergency",
-            location="Austin, Texas",
-            num_results=10
+            params={
+                "engine": "google",
+                "q": "Austin crash OR Austin flood OR Austin fire OR Austin shooting OR Austin accident OR Austin emergency",
+                "location": "Austin, Texas",
+                "num": 10
+            }
         )
 
         if not results or 'organic_results' not in results:
