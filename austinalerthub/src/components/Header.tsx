@@ -48,6 +48,16 @@ const Header = () => {
             My Reports
           </Button>
           
+          {/* 🆕 Events Button */}
+          <Button 
+            variant="ghost"
+            className="flex flex-col items-center text-xs" 
+            onClick={() => navigate('/events')}
+          >
+            <span className="material-icons text-lg mb-1">event</span>
+            Events
+          </Button>
+          
           {/* Utility Buttons */}
           <Button variant="ghost" size="icon">
             <Search className="h-5 w-5" />
