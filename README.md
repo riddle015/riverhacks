@@ -2,7 +2,7 @@
 
 SafeSpot Austin is a citizen-powered safety reporting and monitoring platform built during RiverHacks25. This application enables residents to report safety concerns across Austin, facilitating collaboration between citizens and city officials to make Austin safer.
 
-![SafeSpot Austin](https://placehold.co/600x400?text=SafeSpot+Austin)
+![SafeSpot Austin](./SafeSpot%20Logo.png?text=SafeSpot+Austin)
 
 ## 🌟 Features
 
@@ -76,7 +76,7 @@ npm install
 npm start
 ```
 
-The application will be available at http://localhost:3000
+The application will be available at http://localhost:8080
 
 ## 📱 Usage
 
