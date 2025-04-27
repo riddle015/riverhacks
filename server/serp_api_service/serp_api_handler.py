@@ -10,13 +10,14 @@ class SerpApiService:
         self.api_key = api_key or os.getenv('SERPAPI_API_KEY')
         self.base_url = "https://serpapi.com/search"
 
-    def search(self, query, location="Austin, Texas", lat=None, lon=None, num_results=10):
+    def search(self, query, location="Austin, Texas", lat=None, lon=None, num_results=10, engine="google"):
         """Perform a search query using SerpApi."""
         params = {
             "q": query,
             "location": location,
             "num": num_results,
-            "api_key": self.api_key
+            "api_key": self.api_key,
+            "engine": engine  # 👈 Allow specifying "google_news" instead of "google"
         }
 
         if lat is not None and lon is not None:

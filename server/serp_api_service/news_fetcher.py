@@ -4,20 +4,62 @@ class NewsFetcher:
     def __init__(self):
         self.service = SerpApiService()
 
-    def fetch_news_for_location(self, query_keywords, location="Austin, Texas"):
-        """Fetch relevant news articles based on keywords and optional location."""
-        results = self.service.search(query=query_keywords, location=location, num_results=5)
-        if not results or 'organic_results' not in results:
-            return []
-        
-        articles = []
-        for item in results['organic_results']:
-            title = item.get('title', 'No Title')
-            link = item.get('link', 'No Link')
-            snippet = item.get('snippet', '')
-            articles.append({
-                'title': title,
-                'link': link,
-                'snippet': snippet
+    def fetch_general_news(self, query, location="Austin, Texas"):
+        """
+        Fetch general news articles related to a search query and location using Google News API.
+        """
+        print(f"\n[NewsFetcher] Searching general news for '{query}' in {location}...")
+        results = self.service.search(
+            query=query,
+            location=location,
+            num_results=10,  # General news still fetches 5
+            engine="google_news"  # 👈 Force using Google News API here
+        )
+
+        if not results or 'news_results' not in results:
+            print("No general news results found.")
+            return None
+
+        general_news = []
+        for article in results['news_results']:
+            title = article.get('title', '')
+            link = article.get('link', '')
+            snippet = article.get('snippet', '')
+            general_news.append({
+                "title": title,
+                "link": link,
+                "snippet": snippet
             })
-        return articles
+
+        return general_news if general_news else None
+
+    def fetch_neighborhood_news(self, neighborhood_name):
+        """
+        Fetch localized news articles related to a specific Austin neighborhood using Google News API.
+        """
+        print(f"\n[Neighborhood NewsFetcher] Searching news for neighborhood: '{neighborhood_name}'...")
+        query = f"{neighborhood_name} Austin news"
+
+        results = self.service.search(
+            query=query,
+            location="Austin, Texas",
+            num_results=15,  # ⬅️ Pull broader
+            engine="google_news"  # 👈 Force using Google News API here too
+        )
+
+        if not results or 'news_results' not in results:
+            print("No neighborhood news results found.")
+            return None
+
+        neighborhood_news = []
+        for article in results['news_results']:
+            title = article.get('title', '')
+            link = article.get('link', '')
+            snippet = article.get('snippet', '')
+            neighborhood_news.append({
+                "title": title,
+                "link": link,
+                "snippet": snippet
+            })
+
+        return neighborhood_news if neighborhood_news else None
