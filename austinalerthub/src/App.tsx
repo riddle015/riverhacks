@@ -9,6 +9,9 @@ import ReportIssue from "./pages/ReportIssue";
 import ReportConfirmation from "./pages/ReportConfirmation";
 import MyReports from "./pages/MyReports";
 import NotFound from "./pages/NotFound";
+import { AuthProvider } from "./contexts/AuthContext";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 
 // Import Material Icons
 const MaterialIconStyles = () => {
@@ -24,21 +27,25 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <MaterialIconStyles />
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/report" element={<ReportIssue />} />
-          <Route path="/report-confirmation" element={<ReportConfirmation />} />
-          <Route path="/my-reports" element={<MyReports />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <AuthProvider>
+      <TooltipProvider>
+        <MaterialIconStyles />
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/report" element={<ReportIssue />} />
+            <Route path="/report-confirmation" element={<ReportConfirmation />} />
+            <Route path="/my-reports" element={<MyReports />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 

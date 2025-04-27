@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -9,14 +8,14 @@ import { toast } from 'sonner';
 // UI Components
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { 
-  Form, 
-  FormControl, 
-  FormDescription, 
-  FormField, 
-  FormItem, 
-  FormLabel, 
-  FormMessage 
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -30,37 +29,12 @@ import MediaUploader from '@/components/MediaUploader';
 import LocationPicker, { LocationData } from '@/components/LocationPicker';
 import SeverityPicker from '@/components/SeverityPicker';
 
-// Define the form schema
-const formSchema = z.object({
-  title: z.string().min(5, {
-    message: "Title must be at least 5 characters.",
-  }).max(100, {
-    message: "Title must be at most 100 characters.",
-  }),
-  category: z.string({
-    required_error: "Please select a category.",
-  }),
-  description: z.string().min(10, {
-    message: "Description must be at least 10 characters.",
-  }).max(500, {
-    message: "Description must be at most 500 characters.",
-  }),
-  severity: z.enum(['low', 'medium', 'high'], {
-    required_error: "Please select severity level.",
-  }),
-  location: z.object({
-    latitude: z.number(),
-    longitude: z.number(),
-    address: z.string().optional(),
-  }, {
-    required_error: "Location is required.",
-  }).optional(),
-  mediaFiles: z.array(z.any()).optional(),
-});
+// Auth + API
+import { useAuth } from '@/contexts/AuthContext';
+import { useMutation } from '@tanstack/react-query';
+import { createReport } from '@/api';
 
-type FormValues = z.infer<typeof formSchema>;
-
-// Categories data
+// Add this near the top of the file
 const categories: Category[] = [
   { id: 'infrastructure', name: 'Infrastructure', icon: 'construction', color: '#FFA000' },
   { id: 'traffic', name: 'Traffic', icon: 'commute', color: '#F44336' },
@@ -72,87 +46,75 @@ const categories: Category[] = [
   { id: 'other', name: 'Other', icon: 'help_outline', color: '#9E9E9E' },
 ];
 
-// Generate a random report ID
-const generateReportId = () => {
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let result = '';
-  for (let i = 0; i < 8; i++) {
-    result += characters.charAt(Math.floor(Math.random() * characters.length));
-  }
-  return result;
-};
 
-const ReportIssue = () => {
+// 1. Form schema
+const formSchema = z.object({
+  title: z.string().min(5).max(100),
+  category: z.string(),
+  description: z.string().min(10).max(500),
+  severity: z.enum(['low', 'medium', 'high']),
+  location: z
+    .object({
+      latitude: z.number(),
+      longitude: z.number(),
+      address: z.string().optional()
+    })
+    .optional(),
+  mediaFiles: z.array(z.any()).optional()
+});
+
+type FormValues = z.infer<typeof formSchema>;
+
+
+// 2. Component
+const ReportIssue = ({ requireAuth }: { requireAuth?: boolean }) => {
+  const { token, userId } = useAuth();
   const navigate = useNavigate();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [mediaFiles, setMediaFiles] = useState<File[]>([]);
 
-  // Create form
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (requireAuth && !token) {
+      navigate('/login');
+    }
+  }, [requireAuth, token, navigate]);
+
+  // React Hook Form
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      title: '',
-      description: '',
-      severity: 'medium',
-    },
+    defaultValues: { severity: 'medium' }
   });
 
-  const handleMediaCapture = (files: File[]) => {
-    setMediaFiles(files);
-    form.setValue('mediaFiles', files);
-  };
-
-  const handleLocationSelect = (location: LocationData) => {
-    form.setValue('location', location);
-  };
-
-  const onSubmit = async (data: FormValues) => {
-    setIsSubmitting(true);
-    
-    try {
-      // Simulate network request
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Generate report ID
-      const reportId = generateReportId();
-      
-      // In a real app, we would upload the data to a server here
-      console.log('Report submitted:', { ...data, reportId });
-      
-      // Store report in local storage for demo purposes
-      const reports = JSON.parse(localStorage.getItem('safetyReports') || '[]');
-      const newReport = {
-        id: reportId,
-        ...data,
-        timestamp: new Date().toISOString(),
-        status: 'submitted',
-      };
-      
-      reports.push(newReport);
-      localStorage.setItem('safetyReports', JSON.stringify(reports));
-      
-      toast.success('Report submitted successfully!');
-      
-      // Navigate to confirmation page
-      navigate('/report-confirmation', { 
-        state: { 
-          reportId,
-          category: data.category,
-        }
+  // Mutation to call your Flask API
+  // Updated useMutation for React Query v4+
+  const mutation = useMutation({
+    mutationFn: (data: FormValues) =>
+      createReport(
+        {
+          ...data,
+          user_id: userId!,
+        },
+        token!
+      ),
+    onSuccess: (report) => {
+      toast.success('Report submitted!');
+      navigate('/report-confirmation', {
+        state: { reportId: report.report_id }
       });
-      
-    } catch (error) {
-      console.error('Error submitting report:', error);
-      toast.error('Failed to submit report. Please try again.');
-    } finally {
-      setIsSubmitting(false);
+    },
+    onError: (err: Error) => {
+      toast.error(err.message);
     }
+  });
+
+  // Single onSubmit that calls the mutation
+  const onSubmit = (data: FormValues) => {
+    mutation.mutate(data);
   };
 
   return (
     <div className="min-h-screen pb-20">
       <Header />
-      
+
       <main className="container max-w-xl py-6 space-y-8">
         <div>
           <h1 className="text-2xl font-bold">Report a Safety Issue</h1>
@@ -160,9 +122,13 @@ const ReportIssue = () => {
             Help keep our community safe by reporting issues
           </p>
         </div>
-        
+
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-8"
+          >
+            {/* Title */}
             <Card>
               <CardContent className="pt-6">
                 <FormField
@@ -172,7 +138,10 @@ const ReportIssue = () => {
                     <FormItem>
                       <FormLabel>Issue Title</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g. Broken streetlight on Main St" {...field} />
+                        <Input
+                          placeholder="e.g. Broken streetlight on Main St"
+                          {...field}
+                        />
                       </FormControl>
                       <FormDescription>
                         Provide a short title that describes the issue
@@ -183,7 +152,8 @@ const ReportIssue = () => {
                 />
               </CardContent>
             </Card>
-            
+
+            {/* Category */}
             <Card>
               <CardContent className="pt-6">
                 <FormField
@@ -193,10 +163,10 @@ const ReportIssue = () => {
                     <FormItem className="space-y-4">
                       <FormLabel>Category</FormLabel>
                       <FormControl>
-                        <CategorySelector 
+                        <CategorySelector
                           categories={categories}
                           selectedCategory={field.value}
-                          onCategorySelect={(category) => field.onChange(category)}
+                          onCategorySelect={field.onChange}
                         />
                       </FormControl>
                       <FormMessage />
@@ -205,7 +175,8 @@ const ReportIssue = () => {
                 />
               </CardContent>
             </Card>
-            
+
+            {/* Description */}
             <Card>
               <CardContent className="pt-6">
                 <FormField
@@ -215,14 +186,13 @@ const ReportIssue = () => {
                     <FormItem>
                       <FormLabel>Description</FormLabel>
                       <FormControl>
-                        <Textarea 
-                          placeholder="Please describe the issue in detail" 
-                          className="min-h-[120px]" 
-                          {...field} 
+                        <Textarea
+                          placeholder="Please describe the issue in detail"
+                          {...field}
                         />
                       </FormControl>
                       <FormDescription>
-                        Include any relevant details that might help address the issue
+                        Include details to help address the issue
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -230,7 +200,8 @@ const ReportIssue = () => {
                 />
               </CardContent>
             </Card>
-            
+
+            {/* Media */}
             <Card>
               <CardContent className="pt-6">
                 <FormField
@@ -238,9 +209,9 @@ const ReportIssue = () => {
                   name="mediaFiles"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Photos/Videos</FormLabel>
+                      <FormLabel>Photos / Videos</FormLabel>
                       <FormControl>
-                        <MediaUploader onMediaCapture={handleMediaCapture} />
+                        <MediaUploader onMediaCapture={field.onChange} />
                       </FormControl>
                       <FormDescription>
                         Add up to 3 photos or videos
@@ -251,7 +222,8 @@ const ReportIssue = () => {
                 />
               </CardContent>
             </Card>
-            
+
+            {/* Location */}
             <Card>
               <CardContent className="pt-6">
                 <FormField
@@ -261,7 +233,11 @@ const ReportIssue = () => {
                     <FormItem>
                       <FormLabel>Location</FormLabel>
                       <FormControl>
-                        <LocationPicker onLocationSelect={handleLocationSelect} />
+                        <LocationPicker
+                          onLocationSelect={(loc: LocationData) =>
+                            form.setValue('location', loc)
+                          }
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -269,7 +245,8 @@ const ReportIssue = () => {
                 />
               </CardContent>
             </Card>
-            
+
+            {/* Severity */}
             <Card>
               <CardContent className="pt-6">
                 <FormField
@@ -279,13 +256,13 @@ const ReportIssue = () => {
                     <FormItem className="space-y-4">
                       <FormLabel>Severity Level</FormLabel>
                       <FormControl>
-                        <SeverityPicker 
+                        <SeverityPicker
                           value={field.value}
                           onChange={field.onChange}
                         />
                       </FormControl>
                       <FormDescription>
-                        Select the urgency level of this issue
+                        Select how urgent this issue is
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -293,22 +270,21 @@ const ReportIssue = () => {
                 />
               </CardContent>
             </Card>
-            
+
             <Separator />
-            
+
             <div className="flex justify-end">
-              <Button 
-                type="submit" 
-                className="w-full md:w-auto"
-                disabled={isSubmitting}
+              <Button
+                type="submit"
+                disabled={mutation.isLoading}
               >
-                {isSubmitting ? "Submitting..." : "Submit Report"}
+                {mutation.isLoading ? 'Submitting...' : 'Submit Report'}
               </Button>
             </div>
           </form>
         </Form>
       </main>
-      
+
       <Footer />
     </div>
   );
