@@ -58,14 +58,6 @@ const Header = () => {
             Events
           </Button>
           
-          {/* Utility Buttons */}
-          <Button variant="ghost" size="icon">
-            <Search className="h-5 w-5" />
-          </Button>
-          
-          <Button variant="ghost" size="icon">
-            <Bell className="h-5 w-5" />
-          </Button>
           <Button 
             variant="ghost" 
             className="flex flex-col items-center text-xs"
