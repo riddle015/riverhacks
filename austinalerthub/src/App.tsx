@@ -16,6 +16,7 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import NewsFeed from "./pages/NewsFeed";
 import EventsFeed from "./pages/EventsFeed";
+import HeatMapPage from "./pages/HeatMapPage";
 import "./App.css"
 
 // Import Material Icons
@@ -49,6 +50,7 @@ const App = () => (
             <Route path="/my-reports" element={<MyReports />} />
             <Route path="/news" element={<NewsFeed />} />
             <Route path="/events" element={<EventsFeed />} />
+            <Route path="/heat-map" element={<HeatMapPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
