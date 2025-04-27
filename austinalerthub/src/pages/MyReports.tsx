@@ -4,8 +4,6 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 
 interface Report {
   id: string;
@@ -69,8 +67,6 @@ const MyReports = () => {
   
   return (
     <div className="min-h-screen pb-20">
-      <Header />
-      
       <main className="container py-6 space-y-6">
         <div>
           <h1 className="text-2xl font-bold">My Reports</h1>
@@ -128,8 +124,6 @@ const MyReports = () => {
           </TabsContent>
         </Tabs>
       </main>
-      
-      <Footer />
     </div>
   );
 };
