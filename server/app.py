@@ -10,7 +10,15 @@ from flask_jwt_extended import (
     JWTManager, create_access_token, jwt_required, get_jwt_identity
 )
 
+from serp_api_service.news_fetcher import NewsFetcher
+from serp_api_service.events_fetcher import EventsFetcher
+from serp_api_service.volunteer_events_fetcher import VolunteerEventsFetcher
+
 app = Flask(__name__)
+news_fetcher = NewsFetcher()
+events_fetcher = EventsFetcher()
+volunteer_events_fetcher = VolunteerEventsFetcher()
+
 CORS(app)
 
 # --------------------------
@@ -324,6 +332,40 @@ def add_report_update(report_id):
   keys = ['update_id','report_id','user_id','status_change','comment','created_at']
   update = dict(zip(keys, row))
   return jsonify(update), 201
+
+@app.route('/api/v1/serpapi/news', methods=['GET'])
+def serpapi_news():
+  query = request.args.get('q', 'Austin')  # default to "Austin" if no query
+  try:
+      news = news_fetcher.fetch_general_news(query)
+      if not news:
+          return jsonify({"error": "No news articles found."}), 404
+      return jsonify(news)
+  except Exception as e:
+      print(e)
+      return jsonify({"error": "Failed to fetch news", "details": str(e)}), 500
+
+@app.route('/api/v1/serpapi/events', methods=['GET'])
+def serpapi_events():
+  try:
+      events = events_fetcher.fetch_events_for_location(query="Events in Austin, TX")
+      if not events:
+          return jsonify({"error": "No events found."}), 404
+      return jsonify(events)
+  except Exception as e:
+      print(e)
+      return jsonify({"error": "Failed to fetch events", "details": str(e)}), 500
+
+@app.route('/api/v1/serpapi/volunteer-events', methods=['GET'])
+def serpapi_volunteer_events():
+  try:
+      events = volunteer_events_fetcher.fetch_volunteer_events(location="Austin, Texas")
+      if not events:
+          return jsonify({"error": "No volunteer events found."}), 404
+      return jsonify(events)
+  except Exception as e:
+      print(e)
+      return jsonify({"error": "Failed to fetch volunteer events", "details": str(e)}), 500
 
 if __name__ == "__main__":
   port = int(os.environ.get("PORT", 4000))

@@ -27,10 +27,13 @@ class NewsFetcher:
             title = article.get('title', '')
             link = article.get('link', '')
             snippet = article.get('snippet', '')
+            thumbnail = article.get('thumbnail', '')
+
             general_news.append({
                 "title": title,
                 "link": link,
-                "snippet": snippet
+                "snippet": snippet,
+                "thumbnail": thumbnail
             })
 
         return general_news if general_news else None
@@ -60,10 +63,13 @@ class NewsFetcher:
             title = article.get('title', '')
             link = article.get('link', '')
             snippet = article.get('snippet', '')
+            thumbnail = article.get('thumbnail', '')
+
             neighborhood_news.append({
                 "title": title,
                 "link": link,
-                "snippet": snippet
+                "snippet": snippet,
+                "thumbnail": thumbnail
             })
 
         return neighborhood_news if neighborhood_news else None
