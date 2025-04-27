@@ -12,6 +12,9 @@ import NotFound from "./pages/NotFound";
 import { AuthProvider } from "./contexts/AuthContext";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+import "./App.css"
 
 // Import Material Icons
 const MaterialIconStyles = () => {
@@ -33,6 +36,8 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+        <Header />
+        <main>
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
@@ -43,6 +48,8 @@ const App = () => (
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+        </main>
+          <Footer />
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>

@@ -22,8 +22,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 
 // Custom Components
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import CategorySelector, { Category } from '@/components/CategorySelector';
 import MediaUploader from '@/components/MediaUploader';
 import LocationPicker, { LocationData } from '@/components/LocationPicker';
@@ -113,8 +111,6 @@ const ReportIssue = ({ requireAuth }: { requireAuth?: boolean }) => {
 
   return (
     <div className="min-h-screen pb-20">
-      <Header />
-
       <main className="container max-w-xl py-6 space-y-8">
         <div>
           <h1 className="text-2xl font-bold">Report a Safety Issue</h1>
@@ -284,8 +280,6 @@ const ReportIssue = ({ requireAuth }: { requireAuth?: boolean }) => {
           </form>
         </Form>
       </main>
-
-      <Footer />
     </div>
   );
 };

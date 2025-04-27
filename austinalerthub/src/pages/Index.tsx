@@ -136,8 +136,6 @@ const Index = () => {
           </Card>
         </section>
       </main>
-      
-      <Footer />
     </div>
   );
 };
