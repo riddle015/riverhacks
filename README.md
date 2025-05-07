@@ -109,7 +109,7 @@ The application will be available at http://localhost:8080
 
 - [Hiram Riddle](https://github.com/riddle015) - Full Stack Developer
 - [Abel Rincon](https://github.com/onebrownguy) - Frontend Developer
-- [Michael Weber](https://github.com/michael-weberjr) - Data Scientist
+- [Michael Weber](https://github.com/michael-weberjr) - Full Stack Developer
 - [Christian Lindquist](https://github.com/talonkinkade) - Backend Developer
 
 ## 📄 License
